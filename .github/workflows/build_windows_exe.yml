@@ -1,0 +1,37 @@
+# build_windows_exe.yml
+
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ "main" ] # Переконайтеся, що це назва вашої робочої гілки
+  workflow_dispatch: # Дозволяє запускати вручну
+    
+jobs:
+  build-windows:
+    runs-on: windows-latest # ОС, на якій створюється .exe
+    
+    steps:
+    - name: Checkout code 
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # Вкажіть версію, яку використовуєте
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt # Вимагає наявності файлу requirements.txt
+        
+    - name: Run PyInstaller (Build EXE)
+      run: |
+        # Замініть 'stock_calc_gui.py' на точну назву вашого файлу
+        pyinstaller --onefile --windowed stock_calc_gui.py 
+      
+    - name: Upload EXE artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: StockTake-Windows-EXE
+        path: dist/stock_calc_gui.exe # Шлях до скомпільованого файлу
